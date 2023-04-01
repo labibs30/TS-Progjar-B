@@ -4,20 +4,20 @@ import time
 import sys
 import logging
 import multiprocessing
+import threading
 from http import HttpServer
 
 httpserver = HttpServer()
 
 
-class ProcessTheClient(multiprocessing.Process):
+class ProcessTheClient(threading.Thread):
 	def __init__(self, connection, address):
 		self.connection = connection
 		self.address = address
-		multiprocessing.Process.__init__(self)
+		threading.Thread.__init__(self)
 
 	def run(self):
 		rcv=""
-		test = 0
 		while True:
 			try:
 				data = self.connection.recv(32)
@@ -41,7 +41,7 @@ class ProcessTheClient(multiprocessing.Process):
 				else:
 					break
 			except OSError as e:
-				print(e)
+				pass
 		self.connection.close()
 
 
@@ -55,7 +55,7 @@ class Server(multiprocessing.Process):
 
 	def run(self):
 		self.my_socket.bind(('0.0.0.0', 20000))
-		self.my_socket.listen(20)
+		self.my_socket.listen(200)
 		test = 0
 		while True:
 			self.connection, self.client_address = self.my_socket.accept()
